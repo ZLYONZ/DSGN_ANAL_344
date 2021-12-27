@@ -1,0 +1,470 @@
+\documentclass{article}
+
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+%=====================================================
+% Add PACKAGES Here (You typically would not need to):
+%=====================================================
+
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{graphicx}
+
+%=====================================================
+% Ignore This Part (But Do NOT Delete It:)
+%=====================================================
+
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newtheorem*{fun}{Fun with Algorithms}
+\newtheorem*{challenge}{Challenge Yourself}
+\def\fline{\rule{0.75\linewidth}{0.5pt}}
+\newcommand{\finishline}{\begin{center}\fline\end{center}}
+\newtheorem*{solution*}{Solution}
+\newenvironment{solution}{\begin{solution*}}{{\finishline} \end{solution*}}
+\newcommand{\grade}[1]{\hfill{\textbf{($\mathbf{#1}$ points)}}}
+\newcommand{\thisdate}{February 9, 2021}
+\newcommand{\thissemester}{\textbf{Rutgers: Spring 2021}}
+\newcommand{\thiscourse}{CS 344: Design and Analysis of Computer Algorithms} 
+\newcommand{\thishomework}{Number} 
+\newcommand{\thisname}{Name} 
+\newcommand{\thisextension}{Yes/No} 
+
+\headheight 40pt              
+\headsep 10pt
+\renewcommand{\headrulewidth}{0pt}
+\lhead{\small \textbf{Only for the personal use of students registered in CS 344, Spring 2021 at Rutgers University. Redistribution out of this class is strictly prohibited.}}
+\pagestyle{fancy}
+
+\newcommand{\thisheading}{
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { \textbf{\thiscourse \hfill \thissemester} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Homework \#\thishomework \hfill} }
+       \vspace{2mm}
+         \hbox to 6.28in { { \hfill \thisdate  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { \emph{Name: \thisname \hfill Extension: \thisextension}}
+      \vspace{2mm}}
+      }
+   \end{center}
+   \bigskip
+}
+
+%=====================================================
+% Some useful MACROS (you can define your own in the same exact way also)
+%=====================================================
+
+
+\newcommand{\ceil}[1]{{\left\lceil{#1}\right\rceil}}
+\newcommand{\floor}[1]{{\left\lfloor{#1}\right\rfloor}}
+\newcommand{\prob}[1]{\Pr\paren{#1}}
+\newcommand{\expect}[1]{\Exp\bracket{#1}}
+\newcommand{\var}[1]{\textnormal{Var}\bracket{#1}}
+\newcommand{\set}[1]{\ensuremath{\left\{ #1 \right\}}}
+\newcommand{\poly}{\mbox{\rm poly}}
+
+
+%=====================================================
+% Fill Out This Part With Your Own Information:
+%=====================================================
+
+
+\renewcommand{\thishomework}{2} %Homework number
+\renewcommand{\thisname}{Letao Zhang} % Enter your name here
+\renewcommand{\thisextension}{No} % Pick only one of the two options accordingly
+
+\begin{document}
+
+\thisheading
+\vspace{-0.75cm}
+
+
+%=====================================================
+% LaTeX Tip: You can erase this part from here.... 
+%=====================================================		
+
+\subsection*{Homework Policy}
+\begin{itemize}
+\item If you leave a question completely blank, you will receive 25\% of the grade for that question. This however does not apply to the extra credit questions.
+%\item Each question lists the lecture most relevant to it as well. This aim to help you better plan your homework, however, note that most questions still use materials across multiple lectures. 
+\item You are allowed to discuss the homework problems with other students in the class. \textbf{But you must write your solutions independently.} 
+You may also consult all the materials used in this course (video recordings, notes, textbook, etc.) while writing your solution, but no other resources are allowed.
+\item Do not forget to write down your name and whether or not you are using one of your two extensions. Submit your homework on Canvas. 
+\item Unless  specified otherwise, you may use any algorithm covered in class as a ``black box'' -- for example you can simply write ``use a hash table of size $m$ with chaining on an array of length $n$ to get expected worst-case runtime 
+of $O(1+\frac nm)$ for searching each element''.
+\item Remember to always \textbf{prove the correctness} of your algorithms and \textbf{analyze their running time} (or any other efficiency measure asked in the question). 
+
+\item The ``Challenge yourself'' and ``Fun with algorithms''  are both extra credit. These problems are significantly more challenging than the standard problems you see in this course (including lectures, homeworks, and exams). 
+As a general rule, only attempt to solve these problems if you  enjoy them. 
+\end{itemize}
+
+\finishline
+
+
+
+
+\begin{problem}
+	Suppose we have an array $A[1:n]$ of $n$ \emph{distinct} numbers. For any element $A[i]$, we define the \textbf{rank} of $A[i]$, denoted by $rank(A[i])$, as the number of elements in $A$ that are strictly smaller than $A[i]$ plus one; so $rank(A[i])$ 
+	is also the correct position of $A[i]$ in the sorted order of $A$. 
+	
+	Suppose we have an algorithm \textbf{magic-pivot} that given any array $B[1:m]$ (for any $m > 0$), returns an element $B[i]$ such that $m/3 \leq rank(B[i]) \leq 2m/3$ and has worst-case runtime $O(n)$\footnote{Such an algorithm indeed
+	exists, but its description is rather complicated and not relevant to us in this problem.}. 
+
+	\textbf{Example:} if $B=[1,7,6,2,13,3,5,11,8]$, then \textbf{magic-pivot}$(B)$ will return one arbitrary number among $\set{3,5,6,7}$ (since sorted order of $B$ is $[1,2,3,5,6,7,8,11,13]$)
+	
+	\begin{enumerate}
+	\item[(a)] Use \textbf{magic-pivot} as a black-box to obtain a {deterministic} quick-sort algorithm with worst-case running time of $O(n\log{n})$. \grade{10}
+	
+	\begin{solution}
+	
+		\emph{Algorithm.} Firstly we sort array B using quick-sort. Instead of using the median as pivot, we use magic-pivot m/3 and 2m/3 divide those array into 3 parts. B1 = B[1...(m/3)-1], B2 = B[(m/3)+1...(2m/3)-1], B3 = A[(2m/	3)+1...m]. The logic is simple, after sorting array, we start from the leftmost element and keep track of index of smaller (or equal to) elements as m/3, furthermore 2m/3. While traversing, if we find a smaller element, we swap current element with B[i]. Otherwise we ignore current element.  \\
+		
+		\emph{Proof of Correctness.} By the correctness of quick sort, we can assume that B will be sorted correctly. The proof is by induction on the value of i, and the statement is that after iteration i of the for-loop, rank of numbers is computed correctly. \\
+For the base case, we have that when i = m/3, the algorithm output rank of number is the smallest in the array, this is certainly correct. \\
+For the induction step, let us assume the statement is true for i = m/3 and we prove it for i = m/3 + 1. By induction hypothesis, rank of numbers B[m/3 : 2m/3] is computed correctly; now if B[m/3 + 1] = B[m/3], we give the same rank to B as well which will be correct as the rank of number.  \\
+This proves the induction step and thus the entire induction hypothesis. \\
+			
+		\emph{Runtime Analysis.}  As from the above algorithm the array is partitioned in such three parts. Thus, it is possible that in worst case, array is partitioned in three parts such that one part is smaller than m/3, one part is greater and equal to m/3 and smaller and equal to 2m/3, and other part is greater than 2m/3, makes its time complexity will be O(log N). Whereas there is a loop in the above algorithm. So, complexity is O(n). Therefore, the total runtime is $O(n\log{n})$. \\
+	
+	\end{solution}
+	
+	\item[(b)] Use \textbf{magic-pivot} as a black-box to design an algorithm that given the array $A$ and any integer $1 \leq r \leq n$, finds the element in $A$ that has rank $r$ in $O(n)$ time\footnote{Note that an algorithm with runtime $O(n\log{n})$ follows immediately from part (a)---sort the array and return the element at position $r$. The goal however is to obtain an algorithm with runtime $O(n)$.}. \grade{15}
+	
+	\emph{Hint:} Suppose we run \textbf{partition} subroutine in quick sort with pivot $p$ and it places it in position $q$. Then, if $r < q$, we only need to look for the answer in the subarray $A[1:q]$ and 
+	if $r > q$, we need to look for it in the subarray $A[q+1:n]$ (although, what is the new rank we should look for now?). 
+
+
+	\begin{solution}
+		
+		\emph{Algorithm.} Firstly we run partition subroutine in quick sort with pivot p and it places it in position q. Then, if r < q, we only need to look for the answer in the subarray A[1 : q] and if r > q, we need to look for it in the subarray A[q + 1 : n]. Let A[1:q] denote the given array and denote the order statistic by r. The black-box subroutine on A returns the q element. While traversing, if we find a smaller element, we swap current element with A[q]. Otherwise we ignore current element.  \\
+		
+		\emph{Proof of Correctness.} By the correctness of quick sort, we can assume that A will be sorted correctly. We now find those numbers correctly. The proof is by induction, and the statement is that after iteration i of the for-loop, rank of numbers A[1 : q] is computed correctly. \\
+For the base case, we have that when i = 1, the algorithm output rank of number is sorted, this is certainly correct. \\
+For the induction step, let us assume the statement is true for i = q and we prove it for i = q + 1. By induction hypothesis, rank of players A[1 : q] is computed correctly; now if A[q + 1] = A[q], we give the same rank to A[q + 1] as well which will be correct as the rank of numbers. On the other hand, if A[q + 1] > A[q], then since A is sorted, we know that A[q + 1] is the smallest number larger than A[q]. \\
+This proves the induction step and thus the entire induction hypothesis. By applying the hypothesis, we get that elements in A computed correctly. \\
+ 
+		\emph{Runtime Analysis.} This final approach takes O(n) time to find the elements. \\
+		
+	\end{solution}
+
+	\end{enumerate}
+	
+\end{problem}
+
+\begin{problem}
+Suppose we have an array $A[1:n]$ which consists of numbers $\set{1,\ldots,n}$ written in some arbitrary order (this means that $A$ is a \emph{permutation} of the set $\set{1,\ldots,n}$). 
+Our goal in this problem is to design a very fast randomized algorithm that can find an index $i$ in this array such that $A[i] \mod 3 = 0$, i.e., $A[i]$ is divisible by $3$. For simplicity, in the following, we assume that $n$ itself is a multiple of $3$ and 
+is at least $3$ (so a correct answer always exist). 
+So for instance, if $n=6$ and the array is $A=[2,5,4,6,3,1]$, we want to output either of indices $4$ or $5$. 
+
+\begin{enumerate}
+\item[(a)]	Suppose we sample an index $i$ from $\set{1,\ldots,n}$ uniformly at random. What is the probability that $i$ is a correct answer, i.e., $A[i] \mod 3 = 0$? \grade{5} 
+
+
+	\begin{solution}
+		
+		The probability would be 1/3. Because we assume that n itself is a multiple of 3 and is at least 3, A[i] is divisible by 3. So for i is a correct answer, there will be always one correct answer within 3 numbers, makes the prob be 1/3. \\
+		
+	\end{solution}
+	
+\item[(b)] Suppose we sample $m$ indices from $\set{1,\ldots,n}$ uniformly at random and with repetition. What is the probability that none of these indices is a correct answer?  \grade{5}
+
+
+	\begin{solution}
+		
+		The probability would be 2/3. In the case, we could repeatedly sample indices, makes the probability of choosing numbers which can be divided by 3 the same. Therefore, remaining are those numbers which can't be divided by 3, makes the prob be 1-1/3 = 2/3. \\
+		
+	\end{solution}
+	
+\end{enumerate}
+
+Now, consider the following simple algorithm for this problem: 
+
+
+\textbf{Find-Index-1$(A[1:n])$:} 
+\begin{itemize}
+	\item Let $i=1$.  While $A[i] \mod 3 \neq 0$, sample $i \in \set{1,\ldots,n}$ uniformly at random. Output $i$. 
+\end{itemize}
+
+The proof of correctness of this algorithm is straightforward and we skip it in this question. 
+
+\begin{enumerate}
+\item[(c)] What is the \textbf{expected} worst-case running time of \textbf{Find-Index-1$(A[1:n])$}? Remember to prove your answer formally. \grade{7} 
+
+
+	\begin{solution}
+	
+		In the worst case, the Find-Index-1() function compares all the elements of array A. Therefore, the expected worst case time complexity of linear search would be $O(n)$. \\
+		
+	\end{solution}
+	
+\end{enumerate}
+
+The problem with \textbf{Find-Index-1} is that in the worst-case (and not in expectation), it may actually never terminate! For this reason, let us consider 
+a simple variation of this algorithm as follows. 
+
+\textbf{Find-Index-2$(A[1:n])$:} 
+\begin{itemize}
+	\item For $j=1$ to $n$: 
+	\begin{itemize}
+		\item Sample $i \in \set{1,\ldots,n}$ uniformly at random and if $A[i] \mod 3 = 0$, output $i$ and terminate; otherwise, continue. 
+	\end{itemize}
+	\item If the for-loop never terminated, go over the array $A$ one element at a time to find an index $i$ with $A[i] \mod 3 = 0$ and output it as the answer. 
+\end{itemize}
+
+Again, we skip the proof of correctness of this algorithm. 
+
+\begin{enumerate}
+\item[(d)] What is the \textbf{worst-case running time} of \textbf{Find-Index-2$(A[1:n])$}? What about its \textbf{expected} worst-case running time? Remember to prove your answer formally.
+
+\grade{8} 
+
+
+
+	\begin{solution}
+		
+		In the worst case, the Find-Index-2() function still need to compare all the elements of array A. Therefore, the worst case time complexity of linear search would be $O(n)$, and the expected worst-case running time would be $O(n)$. \\
+		
+	\end{solution}
+	
+\end{enumerate}
+
+\end{problem}
+
+\smallskip
+
+\begin{problem}
+Given an array $A[1:n]$ of a combination of $n$ positive and negative integers, our goal is to find whether there is a sub-array $A[l:r]$ such that
+\[
+    \sum_{i=l}^r A[i] = 0.
+\]
+\textbf{Example.} Given $A = [13,1,2,3,-4,-7,2,3,8,9]$, the elements in $A[2:8]$ add up to zero. Thus, in this case, your algorithm should output \emph{Yes}. 
+On the other hand, if the input array is $A = [3,2,6,-7,-20,2,4]$, then no sub-array of $A$ adds up to zero and thus your algorithm should output \emph{No}. 
+
+\emph{Hint:} Observe that if $\sum_{i=l}^r A[i] = 0$, then $\sum_{i=1}^{l-1} A[i] = \sum_{i=1}^{r} A[i]$; this may come handy! 
+
+\begin{enumerate}
+\item[(a)] Suppose we are promised that every entry of the array belongs to the range $\set{-5,-4,\ldots,0,\ldots,4,5}$. Design an algorithm for this problem with worst-case  runtime of $O(n)$. \grade{15}
+
+\emph{Hint:} Counting sort can also be used to efficiently sort arrays with negative entries whose absolute value is not too large; we just need to ``shift'' the values appropriately. 
+
+
+	\begin{solution}
+		
+		\emph{Algorithm.} Given an input array A[1 : n] with values in {1, 2, . . . , M}. 1) Create an array C[1 : M] and initialize it to be all 0. 2) For i = 1 to n: increase C[A[i]] by one. 3) Let p = 0 and for j = 1 to M: While $C[j] > 0$: decrease C[j] by one; let A[p] = j, and increase p by one. \\
+		
+		\emph{Proof of Correctness.} We first observe that after Line (2) of the algorithm, C[j] is equal to the number of times number j appears in the array A. We now consider Line (3): for any iteration j of the for-loop in this line, define pj as the value of pointer p after this line. The proof is by induction over index j. After iteration j of the for-loop, all the numbers in the original array A that were <= j are now placed in a sorted order in the new array. \\
+Base case: For j = 1, the while-loop places C[1] many copies of number of 1 in the array A[1 : p1]. Since C[1] was equal to the number of times number 1 appears in the old array A, this means that after iteration 1, we copied number of 1’s copies of 1 in A[1 : p1], proving the induction step. \\
+Induction step: Suppose this is true for all integers up to j and we prove it for j + 1. By induction hypothesis, we already placed all copies in the array A. In iteration j + 1, the while-loop places C[j + 1] many copies of number j + 1 in the array A, which makes the array A contains all elements in the array A that are $\leq j + 1$ in a sorted order (since every element in A is equal to j + 1 and is thus larger than all previous elements that were sorted by induction hypothesis for j). This proves induction step. We can now apply our induction hypothesis to j = M and have that the array A contains all elements in the original array A that are in the range {1, . . . , M} in a sorted order. Since all elements of A were in this range, this means that the new array is now a sorted version of A, proving the correctness. \\
+		
+		\emph{Runtime Analysis.} This would be O(n) as we only run a for-loop once. 
+		
+	\end{solution}
+	
+\item[(b)] Now suppose that there is no promise on the range of the entries of $A$. Design a \underline{randomized} algorithm for this problem with \underline{expected} worst-case runtime of $O(n)$. \grade{10}
+
+
+	\begin{solution}
+	
+		\emph{Algorithm.} The maximum value we can obtain by picking a subset of the first i items, i.e., items {1, . . . , i}, when we have a knapsack of size r. Given an input array A[1 : n] with values in {1, 2, . . . , m}. 1) Create an array C[1 : m] and initialize it to be all 0. 2) For i = 1 to n: increase C[A[i]] by one. 3) Let p = 0 and for j = 1 to m: While $C[j] > 0$: decrease C[j] by one; let A[p] = j, and increase p by one. \\
+		
+		\emph{Proof of Correctness.} At this point, we have simply written some recursive formula for A[i] but in no way it is clear that whether this formula does what it is supposed to do or not. We thus need to also prove that this is indeed a correct formula for computing A[i]. Let us consider the base case of this function i = 0 . In this case , we have A[i] = 0 which is also the value we can achieve by using the first 0 item or when the knapsack has no size (i.e., r = 0). So the base case of this function matches the specification. \\
+We now consider the larger values of i and r. Suppose firstly $i > r$, A[i] equals A[i-1]. This is correct because we cannot fit item i in a knapsack of size j and thus the best value we can achieve is by picking the best combination of items from the first i -1 items, which is captured by A(i -1). Thus, whenever i > r, A[i] equals A[i - 1] precisely captures the specification we had.
+
+		\emph{Runtime Analysis.} Since we only compute each recursive call once, the total runtime is then $O(n)$.
+		
+	\end{solution}
+	
+\end{enumerate}
+
+\end{problem}
+
+
+
+\begin{problem}
+	We want to purchase an item of price $n$ and for that we have an unlimited (!) supply of three types of coins with values $5$, $9$, and $13$, respectively. 
+	Our goal is to purchase this item using the \emph{smallest} possible number of coins or outputting that this is simply not possible. 
+	Design a dynamic programming algorithm for this problem with worst-case runtime of $O(n)$. \grade{25}
+	
+	\paragraph{Example.} A couple of examples for this problem: 
+	\begin{itemize}
+		\item Given $n=17$, the answer is ``not possible'' (try it!). 
+		\item Given $n=18$, the answer is $2$ coins: we pick $2$ coins of value $9$ (or $1$ coin of value $5$ and $1$  of value $13$). 
+		\item Given $n=19$, the answer is $3$ coins: we pick $1$ coin of value $9$ and $2$ coins of value $5$. 
+		\item Given $n=20$, the answer is $4$ coins: we pick $4$ coins of value $5$.
+		\item Given $n=21$, the answer is ``not possible'' (try it!). 
+		\item Given $n=22$, the answer is $2$ coins: we pick $1$ coin of value $13$ and $1$ coin of value $9$. 
+		\item Given $n=23$, the answer is $3$ coins: we pick $1$ coin of value $13$ and $2$ coins of value $5$. 
+	\end{itemize}
+\end{problem}
+
+
+	\begin{solution}
+		
+		\emph{Algorithm.}  The first and most important step (for the n-th time) is to write a recursive formula/algorithm for the problem, specify it in plain English, and write a solution for it (including the proof of correctness). Firstly make a 1-D array where A[i] represents the minimum number of coins. Then, we let A[i]= INT MAX if it is not possible to make i using the given coins. Furthermore, we have 3 ways to make i element: a) if ($i \geq 5$) A[i] = min(A[i], A[i-5] + 1). b) if($i \geq 9$) A[i] = min(A[i], A[i-9] + 1), c) if($i \geq 13$) A[i] = min(A[i], A[i-13] + 1). \\
+		
+		\emph{Proof of Correctness.} We consider each case of the recursive formula separately: If i = 1: there is only one subsequence of A[1 : 1] which is A[1] and is increasing on its own, so it is the correct choice. We now consider larger values of i. \\
+		Firstly, for base case, there are no coins required to make 0. A[0] = 0. For int i=1 to n, A[i]= INT MAX. After we pick A[i], the previous entries in the subsequence should all be smaller than A[i]. Moreover, if we decide to pick some $j < i$ where $A[j] < A[i]$ in the subsequence also, we should pick the longest subsequence that ends in A[j] so that we can also maximize the length of the longest subsequence that ends in A[i]. As we are interested in taking the longest sequence, we are simply taking a maximum of all available choices. \\
+This concludes the proof of correctness of the formula.\\
+		
+		\emph{Runtime Analysis.} This dynamic programming algorithm has worst-case runtime of $O(n)$ as we only run a loop from 1 to n though entire array A. \\
+		
+	\end{solution}
+	
+
+\smallskip
+
+
+
+\begin{challenge}
+	Suppose we have two arrays $A[1:n]$ and $B[1:m]$ which are both in the sorted order and are consisting of distinct numbers. Design an algorithm that given an integer $1 \leq r \leq m+n$, find the element with rank $r$ 
+	in the union of arrays $A$ and $B$. Your algorithm should run in only $O(\log{(n+m)})$ time. 
+	
+	\begin{solution}
+		
+		\emph{Algorithm.}  Given an input array A[1 : n] with values in {1, 2, . . . , m}. Create an array C[1 : m] and initialize it to be all 0. For i = 1 to n: increase C[A[i]] by one.  Let p = 0 and for j = 1 to m: While $C[j] > 0$: decrease C[j] by one; let A[p] = j, and increase p by one. \\
+		
+		\emph{Proof of Correctness.} We first observe that after Line (2) of the algorithm, for every $1 \leq j \leq m$, C[j] is equal to the number of times number j appears in the array A (this is a very basic observation and we do
+not need to prove it really). We now consider Line (3): for any iteration j of the for-loop in this line, define pj as the value of pointer p after this line. The proof is by induction over index j. Our induction hypothesis is that for every $1 \leq j \leq M$,
+after iteration j of the for-loop, all the numbers in the original array A that were <= j are now placed in a sorted order in the new array A. \\
+Base case: For j = 1, the while-loop places C[1] many copies of number of 1 in the array A[1 : p1]. Since C[1] was equal to the number of times number 1 appears in the old array A, this means that after iteration 1, we copied number of 1’s copies of 1 in A[1 : p1], proving the induction step. \\
+Induction step: Suppose this is true for all integers up to j and we prove it for j + 1. By induction hypothesis, we already placed all copies of {1, . . . , j} in the array A. In iteration j + 1, the while-loop places C[j + 1] many copies of number j + 1 in the array A – this makes the array A contains all elements in the array A that are $\leq j + 1$ in a sorted order (since every element in A is equal to j + 1 and is thus larger than all previous elements that were sorted by induction hypothesis for j). This proves induction step.\\
+				
+		\emph{Runtime Analysis.} The first line of the algorithm takes O(m) time to initialize the array C. The second line takes O(n) time to iterate over all elements. The third and fourth lines together take O(n + m) time since each iteration of the for-loop increases j by 1 and j can only increase m time, and each iteration of the while-loop increases p and p can only increase n times in total. Hence, the runtime is $O(n + m)$. \\		
+	\end{solution}
+
+	
+	\grade{+10}
+	
+	\textbf{Example.} Suppose $A=[1,5,7,9]$ and $B=[2,4,6,12]$ and so $n=m=4$. Then, the answer to $r=3$ is $4$ and the answer to $r=7$ is $9$ because the union of arrays $A$ and $B$ in the sorted order is $[1,2,4,5,6,7,9,12]$. 
+\end{challenge}
+
+\smallskip
+
+\begin{fun}
+Recall that Fibonacci numbers form a sequence $F_n$ where $F_0 = 0$, $F_1 = 1$, and $F_n = F_{n-1} + F_{n-2}$. 
+The standard algorithm for finding the $n$-th Fibonacci number takes $O(n)$ time. The goal of this question is to design a significantly faster algorithm for this problem. \grade{+10}
+		\begin{enumerate}[label=(\alph*)]
+		\item Prove by induction that for all $n \geq 1$: 
+		\begin{align*}
+			\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^n
+			&= 	\begin{bmatrix}
+				F_{n+1} & F_n \\
+				F_n & F_{n-1}
+			\end{bmatrix}.
+		\end{align*} \\
+		
+	\begin{solution}
+		
+		For the base case n = 1, we know that 	
+		\begin{align*}
+			 \begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^n
+			&= 	\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}
+		\end{align*}
+		which is correct. \\
+		
+		Then, for n = k,
+		\begin{align*}
+			\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^k
+			&= 	\begin{bmatrix}
+				F_{k+1} & F_k \\
+				F_k & F_{k-1}
+			\end{bmatrix}
+		\end{align*}
+		
+		For the induction step, n = k + 1,
+		\begin{align*}
+			\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^(k+1) 
+			&= 	\begin{bmatrix}
+				F_{k+2} & F_k+1 \\
+				F_k+1 & F_{k}
+			\end{bmatrix}
+		\end{align*}
+
+		Thus, 
+		\begin{align*}
+			\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^(k+1)
+			&= 	\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^k
+			&*\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}
+		\end{align*}
+
+		According to n = k, we consider that 
+		\begin{align*}
+			\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^(k+1)
+			&= 	\begin{bmatrix}
+				F_{k+1} & F_k \\
+				F_k & F_{k-1}
+			\end{bmatrix}
+			&*\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}
+		\end{align*}
+
+		Therefore, solving it we get
+		\begin{align*}
+			\begin{bmatrix}
+				F_{k+1} + F_k & F_{k+1} + 0\\
+				F_k + F_{k+1} & F_k + 0
+			\end{bmatrix}
+			&= 	\begin{bmatrix}
+				F_{k+2} & F_k+1 \\
+				F_k+1 & F_{k}
+			\end{bmatrix}
+			&=	\begin{bmatrix}
+				1 & 1 \\
+				1 & 0
+			\end{bmatrix}^(k+1)
+		\end{align*}
+		
+		Hence, it is proved by induction.\\
+	
+	\end{solution}
+		
+		
+		\item Use the first part to design an algorithm that finds $F_n$ in $O(\log{n})$ time. 
+	\end{enumerate}	 
+\end{fun}
+
+\end{document}
+
+
+
+
+
